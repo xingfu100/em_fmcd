@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from scipy.ndimage import gaussian_filter
 
-COLUMNS = ['Be','Cr','F','La','Li','Nb','P','Ti','V','Y','Al2O3','Fe2O3','K2O','SiO2','Pb','Zn','Cu','W','B','Bi','Sn','Zr','Ag','As','Ba','Cd','Co','CaO','MgO','Na2O','Mn','Mo','Ni','Sb','Sc','Sr','Th','U','Rb']
+COLUMNS = ['Be','Cr','F','La','Li','Nb','P','Ti','V','Y','Al2O3','Fe2O3','K2O','SiO2','Ag','As','Au','B','Ba','Bi','Cd','Co','Cu','Hg','Mn','Mo','Ni','Pb','Sb','Sn','Sr','Th','U','W','Zn','Zr','CaO','MgO','Na2O']
 ASSOCIATIONS = [['Pb','Zn','Cu','F'], ['Pb','W','B','Bi'], ['Pb','Bi','Sn'], ['Pb','Cu','Zn','Ti','Y','Zr'], ['Pb','Li','Be','Sn','Y']]
 
 def generate():
@@ -30,6 +30,13 @@ def generate():
     # parameters approximate broad observed ranges, not individual records.
     location = np.full(39, 20.0)
     spread = np.full(39, .45)
+    # Coarse simulated scales only; no observed sample values are used.
+    levels={'Ag':20,'As':20,'Au':.5,'B':20,'Ba':300,'Be':3,'Bi':.5,'Cd':200,
+            'Co':20,'Cr':50,'Cu':30,'F':300,'Hg':20,'La':50,'Li':30,'Mn':500,
+            'Mo':.5,'Nb':20,'Ni':30,'P':400,'Pb':30,'Sb':3,'Sn':4,'Sr':50,
+            'Th':20,'Ti':2000,'U':3,'V':50,'W':4,'Y':20,'Zn':50,'Zr':200}
+    for name,center in levels.items():
+        location[COLUMNS.index(name)] = center
     for name,center,sigma in [('Sn',4,1.0),('Al2O3',120000,.30),
                               ('CaO',5500,.95),('K2O',17000,.55),
                               ('MgO',6500,.40),('Na2O',1700,.90),
