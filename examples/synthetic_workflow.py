@@ -22,8 +22,8 @@ def select(pc,cols):
 
 def run(out):
     em=load('em','01_em_aic.py');rpca=load('rpca','02_robust_pca.py');fmcd=load('fmcd','03_fmcd.py')
-    df=pd.read_csv(ROOT/'examples/synthetic_1600x39.csv');truth=pd.read_csv(ROOT/'examples/synthetic_ground_truth.csv');cols=list(df.columns[2:]);raw=df[cols].to_numpy(float)
-    assert raw.shape==(1600,39) and np.all(raw>0) and np.isfinite(raw).all()
+    df=pd.read_csv(ROOT/'examples/synthetic_1000x39.csv');truth=pd.read_csv(ROOT/'examples/synthetic_ground_truth.csv');cols=list(df.columns[2:]);raw=df[cols].to_numpy(float)
+    assert raw.shape==(1000,39) and np.all(raw>0) and np.isfinite(raw).all()
     assert (df[['X_coord','Y_coord']].to_numpy()==truth[['X_coord','Y_coord']].to_numpy()).all()
     clr=np.log(raw)-np.log(raw).mean(axis=1,keepdims=True); c=pd.DataFrame(clr,columns=cols); X=c[INDICATORS].to_numpy()
     model,trials=em.fit_best_gmm_by_seeds(X,5,[42]);labels=model.predict(X);assert len(np.unique(labels))==5
