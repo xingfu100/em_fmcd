@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from matplotlib.ticker import AutoMinorLocator, MaxNLocator, MultipleLocator
 
 ROOT=Path(__file__).resolve().parents[1]
 out=ROOT/'results_irregular'
@@ -20,7 +21,7 @@ for i in range(5):
     sub=r[r.cluster==i]
     ax.scatter(sub.X_coord,sub.Y_coord,s=22,marker='s',c=colors[i],edgecolors='white',linewidths=.14,label=f'Cluster {i+1}')
 ax.set(xlim=(-1,40),ylim=(-1,40),aspect='equal',xlabel='X (grid index)',ylabel='Y (grid index)')
-ax.minorticks_on();ax.legend(loc='lower center',bbox_to_anchor=(.5,-.20),ncol=3,frameon=False,fontsize=8)
+ax.xaxis.set_major_locator(MultipleLocator(10));ax.yaxis.set_major_locator(MultipleLocator(10));ax.xaxis.set_minor_locator(AutoMinorLocator(2));ax.yaxis.set_minor_locator(AutoMinorLocator(2));ax.legend(loc='lower center',bbox_to_anchor=(.5,-.20),ncol=3,frameon=False,fontsize=8)
 fig.savefig(out/'figure_em.png',dpi=300,bbox_inches='tight');plt.close(fig)
 
 fig,axes=plt.subplots(2,3,figsize=(10,7),constrained_layout=True)
@@ -30,7 +31,7 @@ for i,ax in enumerate(axes.flat):
     for level,color in zip([1,2,3],colors_anom):
         points=sub[sub[col]==level];ax.scatter(points.X_coord,points.Y_coord,s=12,c=color,marker='s',linewidths=0)
     ax.set(xlim=(-1,40),ylim=(-1,40),aspect='equal',xlabel='X (grid index)',ylabel='Y (grid index)')
-    ax.text(.03,.96,f'({chr(97+i)})',transform=ax.transAxes,ha='left',va='top',fontweight='bold');ax.minorticks_on()
+    ax.text(.03,.96,f'({chr(97+i)})',transform=ax.transAxes,ha='left',va='top',fontweight='bold');ax.xaxis.set_major_locator(MultipleLocator(10));ax.yaxis.set_major_locator(MultipleLocator(10));ax.xaxis.set_minor_locator(AutoMinorLocator(2));ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 fig.legend(handles=[Line2D([0],[0],marker='s',linestyle='',color=c,label=l) for c,l in zip(colors_anom,['Weak anomaly','Moderate anomaly','Strong anomaly'])],loc='outside lower center',ncol=3,frameon=False)
 fig.savefig(out/'figure_anomalies.png',dpi=300);plt.close(fig)
 
@@ -38,7 +39,7 @@ fig,axes=plt.subplots(3,2,figsize=(7.5,10),constrained_layout=True)
 for i,ax in enumerate(axes.flat):
     key=str(i) if i<5 else 'regional'; v=load[load.model.astype(str)==key].copy(); v['magnitude']=np.hypot(v.PC1,v.PC2)
     # Limit labels to the largest vectors and the selected association.
-    v=v[v.selected | v.index.isin(v.nlargest(8,'magnitude').index)]
+    v=v[v.selected | v.index.isin(v.nlargest(6,'magnitude').index)]
     ax.axhline(0,c='#bfd0d8',lw=.5);ax.axvline(0,c='#bfd0d8',lw=.5)
     placed=[]
     for _,row in v.iterrows():
@@ -50,11 +51,12 @@ for i,ax in enumerate(axes.flat):
             label_y += .04
         placed.append((float(row.PC1),label_y))
         ax.text(row.PC1,label_y,row.element,fontsize=8,ha='left',va='bottom')
-    extent=max(float(v.PC1.abs().max()), float(v.PC2.abs().max())) * 1.25
+    extent=max(float(v.PC1.abs().max()), float(v.PC2.abs().max())) * 1.75
     ax.set_xlim(-extent, extent); ax.set_ylim(-extent, extent)
     sr=summary[summary.model.astype(str)==key].iloc[0]
     ax.set_xlabel(f"PC1 ({100*sr.pc1_fraction:.2f}%)");ax.set_ylabel(f"PC2 ({100*sr.pc2_fraction:.2f}%)")
-    ax.text(.04,.96,f'({chr(97+i)})',transform=ax.transAxes,ha='left',va='top',fontweight='bold');ax.set_aspect('equal',adjustable='box');ax.minorticks_on()
+    ax.text(.04,.96,f'({chr(97+i)})',transform=ax.transAxes,ha='left',va='top',fontweight='bold');ax.set_aspect('equal',adjustable='box');ax.xaxis.set_major_locator(MaxNLocator(nbins=4));ax.yaxis.set_major_locator(MaxNLocator(nbins=4));ax.xaxis.set_minor_locator(AutoMinorLocator(2));ax.yaxis.set_minor_locator(AutoMinorLocator(2))
 fig.savefig(out/'figure_rpca.png',dpi=300);plt.close(fig)
 print('Saved EM map, RPCA loadings, and clustered/regional anomaly maps.')
+
 
