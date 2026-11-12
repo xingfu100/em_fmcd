@@ -40,20 +40,21 @@ for i,ax in enumerate(axes.flat):
     key=str(i) if i<5 else 'regional'; v=load[load.model.astype(str)==key].copy(); v['magnitude']=np.hypot(v.PC1,v.PC2)
     # Limit labels to the largest vectors and the selected association.
     pb_length=float(v.loc[v.element.eq('Pb'),'magnitude'].iloc[0])
-    v=v[(v.magnitude >= pb_length/4) & (v.magnitude <= pb_length*4)]
+    v=v[(v.magnitude >= pb_length/2) & (v.magnitude <= pb_length*2)]
     v=v[v.selected | v.index.isin(v.nlargest(6,'magnitude').index)]
     ax.axhline(0,c='#bfd0d8',lw=.5);ax.axvline(0,c='#bfd0d8',lw=.5)
+    extent=max(float(v.PC1.abs().max()), float(v.PC2.abs().max())) * 1.8
     placed=[]
     for _,row in v.iterrows():
         ax.annotate('',xy=(row.PC1,row.PC2),xytext=(0,0),arrowprops={'arrowstyle':'-|>','lw':.9,'color':'black','mutation_scale':6})
-        label_y = float(row.PC2)
-        for _ in range(12):
-            if not any(abs(row.PC1-px)<.05 and abs(label_y-py)<.04 for px,py in placed):
+        label_y=float(row.PC2)
+        for _ in range(10):
+            if not any(abs(row.PC1-px)<.12*extent and abs(label_y-py)<.08*extent for px,py in placed):
                 break
-            label_y += .04
+            label_y+=.08*extent
+        label_y=min(label_y,.9*extent)
         placed.append((float(row.PC1),label_y))
-        ax.text(row.PC1,label_y,row.element,fontsize=8,ha='left',va='bottom')
-    extent=max(float(v.PC1.abs().max()), float(v.PC2.abs().max())) * 1.75
+        ax.text(row.PC1,label_y,row.element,fontsize=8,ha='left',va='bottom',clip_on=True)
     ax.set_xlim(-extent, extent); ax.set_ylim(-extent, extent)
     sr=summary[summary.model.astype(str)==key].iloc[0]
     ax.set_xlabel(f"PC1 ({100*sr.pc1_fraction:.2f}%)");ax.set_ylabel(f"PC2 ({100*sr.pc2_fraction:.2f}%)")
