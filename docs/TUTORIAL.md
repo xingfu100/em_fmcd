@@ -1,6 +1,6 @@
 # Synthetic geological-style comparison
 
-The fictional 40 × 40 grid has 1,600 samples and 39 positive element variables. Grid indices are not geographic coordinates and no values or positions are extracted from the study data or geological map. Three smooth, interleaving background fields and two irregular bodies create a deliberately favorable five-population example. Transitional mixtures occur at unit boundaries; an artificial Pb enrichment belt and local spots are added with different associated elements in each unit. One unit has a higher Pb background. The sample row order is deliberately chosen so that scikit-learn random initialization with seed 42 starts in each designed population; results are thus not an unbiased test of initialization stability.
+The fictional 40 × 40 grid has 1,600 samples and 39 positive element variables. Grid indices are not geographic coordinates and no values or positions are extracted from the study data or geological map. Five hypothetical lithologies—carbonate, sandstone, shale, granite and mudstone—form interleaving background units and two irregular bodies. Some samples have mixed background signatures, and transitional mixtures occur at unit boundaries; an artificial Pb enrichment belt and local spots are added with different associated elements in each unit. One unit has a higher Pb background. The sample row order is deliberately chosen so that scikit-learn random initialization with seed 42 starts in each designed population; results are thus not an unbiased test of initialization stability.
 
 ## Run
 
