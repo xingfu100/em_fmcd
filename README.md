@@ -57,11 +57,19 @@ python tests/quick_test.py
 python examples/synthetic_workflow.py
 ```
 
-The first command checks parsing and Chinese characters in source comments and docstrings. The second reads the included synthetic 1,600-sample, 39-element dataset and exercises all three computational cores without launching GUIs; on success it prints `PASS` and writes files under `example_output/`. To choose a different destination, append its path, for example `python examples/synthetic_workflow.py my_output`. See the [tutorial](docs/TUTORIAL.md) for expected outputs and limitations.
+The first command checks parsing and Chinese characters in source comments and docstrings. The second reads the included synthetic 1,600-sample, 39-element dataset and exercises all three computational cores without launching GUIs; on success it prints `PASS` and writes files under `results_irregular/`. To choose a different destination, append its path, for example `python examples/synthetic_workflow.py my_output`. See the [tutorial](docs/TUTORIAL.md) for expected outputs and limitations.
 
-## Synthetic results
+## Synthetic clustered and regional comparison
 
-[View cluster summaries](results_1600/cluster_summary.csv), [PC1–PC2 loadings and selections](results_1600/rpca_pc1_pc2_loadings.csv), and [sample-level FMCD results](results_1600/sample_results.csv). These results are synthetic and do not represent real geochemical observations. The design deliberately creates five spatial blocks and a Pb-enrichment trend; the row order was selected to give seed 42 a favorable initialization. See the tutorial for the association-selection heuristic and limitations.
+The example generates a fictional 40 × 40 grid with 39 synthetic elements, interleaved background units, two distinct bodies, and an imposed Pb-enrichment pattern. It is inspired by the layout of geological units, not extracted or digitized from the study-area map. Coordinates are artificial indices. The synthetic generator intentionally separates backgrounds and selects a row permutation that gives K=5 seed 42 one initialization point per designed unit. This makes the demonstration favorable to EM; it is not independent evidence of superior performance on real geological data.
+
+The pipeline applies CLR to all 39 variables, fits EM with K=5, then performs ILR–RPCA and FMCD within each cluster and independently for the entire region. The simulated imposed anomaly mask permits a transparent comparison with known synthetic truth. [Model summary](results_irregular/model_summary.csv), [sample comparison](results_irregular/sample_comparison.csv), [loadings](results_irregular/rpca_loadings.csv), and [detection metrics](results_irregular/detection_comparison.csv) are provided. [Tutorial](docs/TUTORIAL.md) explains the assumptions, parameters, preprocessing and limits.
+
+![Synthetic EM blocks](results_irregular/figure_em.png)
+
+![Synthetic clustered and regional anomaly maps](results_irregular/figure_anomalies.png)
+
+![Synthetic RPCA loadings](results_irregular/figure_rpca.png)
 
 ## Study data and reproducibility
 
