@@ -1,16 +1,25 @@
-# Synthetic 40 × 40 geochemical workflow
+# Synthetic geological-style comparison
 
-The dataset `examples/synthetic_1600x39.csv` contains 1,600 fictional samples on a 40 × 40 integer grid and 39 artificial element variables. Coordinates are grid indices, not real geographic locations. A generator using seed 42 assigns five contiguous spatial background blocks with distinct indicator signatures and embeds an oblique Pb enrichment trend with block-specific associated elements. These characteristics are deliberately designed, not observed geology. Rows are deliberately permuted to give seed 42 a favorable initialization for the present scikit-learn `random_from_data` implementation; the clean blocks therefore are not evidence of robust classification on real datasets.
+The fictional 40 × 40 grid has 1,600 samples and 39 positive element variables. Grid indices are not geographic coordinates and no values or positions are extracted from the study data or geological map. Three smooth, interleaving background fields and two irregular bodies create a deliberately favorable five-population example. Transitional mixtures occur at unit boundaries; an artificial Pb enrichment belt and local spots are added with different associated elements in each unit. One unit has a higher Pb background. The sample row order is deliberately chosen so that scikit-learn random initialization with seed 42 starts in each designed population; results are thus not an unbiased test of initialization stability.
 
-Install the dependencies in the README and run:
+## Run
 
 ```text
 python tests/quick_test.py
+python examples/generate_synthetic.py
 python examples/synthetic_workflow.py
+python examples/plot_results.py
 ```
 
-The workflow calculates CLR across all 39 variables and fits EM with K=5 using 14 lithological indicators and seed 42. It computes cluster-specific ILR–MCD RPCA on the 39 original positive values with alpha 0.50 and seed 42. For each cluster, it represents Pb and each element as their two CLR loading coordinates (PC1, PC2). It ranks elements with positive cosine similarity to Pb by cosine multiplied by their loading-vector length; it selects up to five with cosine at least 0.8, and fills a minimum of two positive-direction partners when needed. Thus each combination contains Pb plus 2–5 elements. This explicit heuristic operationalizes the paper's directional and relative-loading criteria for the demonstration; it is not a Pearson correlation and does not replace geological interpretation. If Pb has negligible PC1–PC2 loading or fewer than two candidates, the workflow fails rather than inventing an association.
+The generator writes the fictional input CSV and a synthetic ground-truth CSV. The workflow writes `results_irregular/`: GMM trials, `model_summary.csv`, `rpca_loadings.csv`, `sample_comparison.csv` and `detection_comparison.csv`. The plotting script writes three manuscript-inspired PNG figures. It always reads `results_irregular/`.
 
-FMCD operates on each cluster's chosen CLR variables using seed 42 and the original function defaults: support fraction 0.75, 1000 starts, two initial C-steps, 20 candidates, maximum 100 C-steps, ridge 1e-12 and reweight quantile 0.975. The anomaly cutoff is the 0.975 chi-square quantile with degrees of freedom equal to the number of selected variables. Output includes sample-level cluster, distance, threshold and anomaly index; selected associations and PC1/PC2 loadings; and GMM trials. The recorded results in `results_1600/` were generated with the tested Windows environment. Cluster numbers are arbitrary.
+## Processing
 
-The example calls computational functions directly; it does not automate the GUIs, maps in the paper, or all geological decisions. It validates numerical execution on designed synthetic data, not reproducibility of paper results. `generate_synthetic.py` can regenerate the fictional dataset. Real study data and geographic locations are not included.
+1. The synthetic data are finite and strictly positive; no nondetect replacement, unit conversion, Z-score or outlier deletion is applied. Coordinates and observations are only fictional. Calculate a single CLR across **all 39** concentration columns for every sample. No cluster-specific recentering or new CLR over selected subsets is performed for EM or FMCD.
+2. Fit EM at K=5 with the manuscript's 14 indicators, seed 42 and the source script's diagonal-covariance settings. Labels are arbitrary and plots display label + 1.
+3. Run RPCA independently for each EM cluster and once for all 1,600 observations. RPCA receives positive original values and internally calculates CLR, pivot ILR and MCD–PCA. For each model, use PC1–PC2 CLR loadings to select Pb plus 2–5 elements: rank positive-direction elements by cosine similarity with Pb multiplied by loading-vector length, preferring cosine ≥0.8; if necessary use the top two positive candidates. This reproducible numerical heuristic approximates the paper's qualitative same-direction and magnitude interpretation. It is not a correlation coefficient or a geological decision rule.
+4. Use the previously computed 39-component CLR values for the selected variables. Run FMCD per cluster and once globally with support fraction 0.75, 1000 starts, initial C-steps 2, 20 retained candidates, up to 100 final C-steps, ridge 1e-12, reweight quantile 0.975 and seed 42. The anomaly index divides MD² by the 0.975 chi-square cutoff. Background ≤1; weak (1,1.5]; moderate (1.5,2]; strong >2. Within-cluster and regional element selections may differ, matching the paper's separate RPCA approach but confounding a comparison of EM alone.
+
+## Limits of comparison
+
+The synthetic reference mask is the arbitrarily selected imposed-intensity threshold 0.55; it is not a measured mineral deposit or proven anomaly. Confusion-matrix metrics quantify this single constructed example only. Favorable recovery under these assumptions does not establish that EM is always needed or that it improves real-data performance. Boundaries and modeled signatures are synthetic; the results do not reproduce the manuscript's study-area sample outcomes. The tests call the numerical functions directly, not the desktop dialogs.
