@@ -44,7 +44,7 @@ The input tables are prepared separately for each step. EM and FMCD use preproce
 
 ## Synthetic example
 
-The example contains 1,000 simulated samples and 39 elements on a 40 × 25 grid. It compares the cluster-specific and whole-region RPCA–FMCD workflows.
+The example contains 1,600 simulated samples and 39 elements on a 40 × 40 grid. It compares the cluster-specific and whole-region RPCA–FMCD workflows.
 
 ```text
 python tests/quick_test.py
