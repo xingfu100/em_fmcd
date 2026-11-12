@@ -15,9 +15,9 @@ def select(pc,cols):
     m=np.asarray(pc['clr_loadings_all'])[:,:2];pb=m[cols.index('Pb')];length=np.linalg.norm(m,axis=1); pb_norm=np.linalg.norm(pb)
     if pb_norm<1e-12:raise ValueError('Pb loading is negligible in PC1–PC2')
     cosine=np.divide(m@pb,length*pb_norm,out=np.full(len(cols),-1.),where=length>1e-12)
-    candidates=[i for i in range(len(cols)) if cols[i]!='Pb' and cosine[i]>0];candidates.sort(key=lambda i:float(cosine[i]*length[i]),reverse=True)
+    candidates=[i for i in range(len(cols)) if cols[i]!='Pb' and cosine[i]>0 and (1/4)<=length[i]/pb_norm<=4];candidates.sort(key=lambda i:float(cosine[i]*length[i]),reverse=True)
     eligible=[i for i in candidates if cosine[i]>=.8];chosen=eligible[:5] if len(eligible)>=2 else candidates[:2]
-    if len(chosen)<2:raise ValueError('Fewer than two positive-direction candidates')
+    if len(chosen)<2:raise ValueError('Fewer than two positive-direction candidates with comparable loading lengths')
     return ['Pb']+[cols[i] for i in chosen],m,cosine
 
 def run(out):
