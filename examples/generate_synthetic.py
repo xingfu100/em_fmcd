@@ -18,9 +18,10 @@ def generate():
     body2=((xx-10)/5.5)**2+((yy-18)/5.5)**2 < 1+warp*.8
     zone[body1]=3;zone[body2]=4
     coords=np.column_stack((xx.ravel(),yy.ravel())); region=zone.ravel().copy(); n=1000
-    # Occasional samples inherit a neighbouring background signature.
-    scattered=rng.random(n)<.07
-    region[scattered]=rng.integers(0,5,scattered.sum())
+    # Keep the random stream used by the previous example while removing
+    # isolated reassignment; spatial mixing remains confined to contacts.
+    previous_mask = rng.random(n) < .07
+    rng.integers(0, 5, previous_mask.sum())
     # Smooth background signatures intentionally differ by synthetic zone.
     signatures=rng.normal(0,.55,(5,14))
     # Moderately vary major oxides across backgrounds while retaining their scale.
@@ -46,7 +47,7 @@ def generate():
     # Artificial anomalies: irregular clustered enrichment along a bent belt.
     trend=np.exp(-((yy-(4+.32*xx+2*np.sin(xx/7)))/3.4)**2)
     spots=sum(np.exp(-((xx-x)**2+(yy-y)**2)/20) for x,y in [(6,13),(14,19),(25,19),(32,18),(28,7),(10,18)])
-    strength=(.75*trend+.95*spots).ravel(); perturb=rng.normal(0,.04,n); mineral=np.maximum(0,strength+perturb)
+    strength=(.75*trend+.95*spots).ravel(); perturb=rng.normal(0,.04,n); mineral=1.5*np.maximum(0,strength+perturb)
     # Group-specific correlated fields give each composition its own
     # covariance structure and keep associations distinguishable.
     for z,association in enumerate(ASSOCIATIONS):
