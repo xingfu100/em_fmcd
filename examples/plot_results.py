@@ -39,6 +39,8 @@ fig,axes=plt.subplots(3,2,figsize=(7.5,10),constrained_layout=True)
 for i,ax in enumerate(axes.flat):
     key=str(i) if i<5 else 'regional'; v=load[load.model.astype(str)==key].copy(); v['magnitude']=np.hypot(v.PC1,v.PC2)
     # Limit labels to the largest vectors and the selected association.
+    pb_length=float(v.loc[v.element.eq('Pb'),'magnitude'].iloc[0])
+    v=v[(v.magnitude >= pb_length/4) & (v.magnitude <= pb_length*4)]
     v=v[v.selected | v.index.isin(v.nlargest(6,'magnitude').index)]
     ax.axhline(0,c='#bfd0d8',lw=.5);ax.axvline(0,c='#bfd0d8',lw=.5)
     placed=[]
