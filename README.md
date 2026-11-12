@@ -7,7 +7,7 @@ This repository contains three interactive Python programs used in a geochemical
 - [01_em_aic.py](src/01_em_aic.py): EM clustering and multi-seed AIC comparisons.
 - [02_robust_pca.py](src/02_robust_pca.py): ILR–MCD robust PCA and CLR loadings.
 - [03_fmcd.py](src/03_fmcd.py): robust distances, thresholds, and anomaly classes.
-- [Synthetic data](examples/synthetic_1200x39.csv): 1,200 artificial samples and 39 variables, with no real coordinates.
+- [Synthetic data](examples/synthetic_1600x39.csv): 1,600 artificial samples and 39 variables, with no real coordinates.
 - [Synthetic workflow](examples/synthetic_workflow.py): manuscript-style demonstration of the three computational cores.
 - [Data generator](examples/generate_synthetic.py): regenerate the artificial dataset with a fixed seed.
 - [User guide](docs/USER_GUIDE.md): input formats, options, and outputs.
@@ -57,7 +57,11 @@ python tests/quick_test.py
 python examples/synthetic_workflow.py
 ```
 
-The first command checks parsing and Chinese characters in source comments and docstrings. The second reads the included synthetic 1,200-sample, 39-element dataset and exercises all three computational cores without launching GUIs; on success it prints `PASS` and writes files under `example_output/`. To choose a different destination, append its path, for example `python examples/synthetic_workflow.py my_output`. See the [tutorial](docs/TUTORIAL.md) for expected outputs and limitations.
+The first command checks parsing and Chinese characters in source comments and docstrings. The second reads the included synthetic 1,600-sample, 39-element dataset and exercises all three computational cores without launching GUIs; on success it prints `PASS` and writes files under `example_output/`. To choose a different destination, append its path, for example `python examples/synthetic_workflow.py my_output`. See the [tutorial](docs/TUTORIAL.md) for expected outputs and limitations.
+
+## Synthetic results
+
+[View cluster summaries](results_1600/cluster_summary.csv), [PC1–PC2 loadings and selections](results_1600/rpca_pc1_pc2_loadings.csv), and [sample-level FMCD results](results_1600/sample_results.csv). These results are synthetic and do not represent real geochemical observations. The design deliberately creates five spatial blocks and a Pb-enrichment trend; the row order was selected to give seed 42 a favorable initialization. See the tutorial for the association-selection heuristic and limitations.
 
 ## Study data and reproducibility
 
